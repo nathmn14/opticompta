@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>OptiCompta_Stock</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 20px 0;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+    }
+    th {
+      background-color: #f2f2f2;
+    }
+    @media (max-width: 600px) {
+      th, td {
+        font-size: 14px;
+      }
+    }
+    input.inline-edit {
+      width: 100%;
+      background: transparent;
+      border: none;
+      outline: none;
+      padding: 0;
+    }
+  </style>
+</head>
+<body class="flex h-screen bg-gray-100">
+
+<!-- Sidebar -->
+<aside class="w-64 bg-gray-900 text-white p-3 overflow-y-auto">
+  <h2 class="text-sm font-semibold mb-3">📋 Gestion du Stock</h2>
+  <form id="stock-form" class="space-y-2 text-xs">
+    <div>
+      <label class="block mb-0.5" for="date">Date</label>
+      <input type="text" id="date" required class="w-full h-7 px-2 rounded bg-gray-800 border border-gray-700">
+    </div>
+    <div>
+      <label class="block mb-0.5" for="quantite">Quantité</label>
+      <input type="number" id="quantite" min="1" class="w-full h-7 px-2 rounded bg-gray-800 border border-gray-700">
+    </div>
+    <div>
+      <label class="block mb-0.5" for="prix">Prix unitaire</label>
+      <input type="number" id="prix" min="0" step="any" class="w-full h-7 px-2 rounded bg-gray-800 border border-gray-700">
+    </div>
+    <div>
+      <label class="block mb-0.5" for="type">Type</label>
+      <select id="type" class="w-full h-7 px-2 rounded bg-gray-800 border border-gray-700">
+        <option value="entree">Entrée</option>
+        <option value="sortie">Sortie</option>
+      </select>
+    </div>
+    <div>
+      <label class="block mb-0.5" for="methode">Méthode</label>
+      <select id="methode" class="w-full h-7 px-2 rounded bg-gray-800 border border-gray-700">
+        <option value="FIFO">FIFO</option>
+        <option value="LIFO">LIFO</option>
+      </select>
+    </div>
+    <div class="pt-1">
+      <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 h-7 rounded font-semibold">Ajouter</button>
+    </div>
+  </form>
+</aside>
+
+<!-- Main Content -->
+<main class="flex-1 overflow-y-auto p-4">
+  <div class="flex justify-end mb-4">
+    <button onclick="downloadPDF()" class="bg-green-600 hover:bg-green-700 text-white font-bold py-1 px-4 rounded text-xs">
+      📥 Enregistrer en PDF
+    </button>
+  </div>
+
+  <div id="pdf-content" class="bg-white p-4 rounded shadow">
+    <h1 class="text-xl font-bold mb-4">📊 Suivi du Stock</h1>
+
+    <div class="overflow-x-auto">
+      <table id="stock-table" class="bg-white text-xs mb-8">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Libellé</th>
+            <th colspan="3">Entrées</th>
+            <th colspan="3">Sorties</th>
+            <th colspan="3">Stock</th>
+            <th class="no-print"></th> <!-- Cacher cette colonne lors de l'export PDF -->
+          </tr>
+          <tr>
+            <th></th>
+            <th></th>
+            <th>Qte</th>
+            <th>PU</th>
+            <th>PT</th>
+            <th>Qte</th>
+            <th>PU</th>
+            <th>PT</th>
+            <th>Qte</th>
+            <th colspan="2">Détails</th>
+            <th class="no-print"></th> <!-- Cacher cette colonne lors de l'export PDF -->
+          </tr>
+        </thead>
+        <tbody id="table-body"></tbody>
+      </table>
+    </div>
+
+    <h2 class="text-lg font-bold mb-2">📈 Calculs de Stock</h2>
+    <table border="1" class="bg-white text-xs mb-6 w-full">
+      <tr>
+        <td><b>CUMP (Coût Unitaire Moyen Pondéré)</b></td>
+        <td id="cump"></td>
+      </tr>
+      <tr>
+        <td><b>CUMPE (CUMP des entrées)</b></td>
+        <td id="cumpe"></td>
+      </tr>
+      <tr>
+        <td><b>CUMPSIE (CUMP stock initial + entrées)</b></td>
+        <td id="cumpsie"></td>
+      </tr>
+    </table>
+
+    <div class="text-xs text-gray-700 leading-5">
+      <h3 class="font-bold mb-1">🧠 Détail des calculs :</h3>
+      <p>- <b>CUMP</b> = Total des prix totaux des entrées ÷ Total des quantités des entrées</p>
+      <p>- <b>CUMPE</b> = Même formule que CUMP sans considérer le stock initial</p>
+      <p>- <b>CUMPSIE</b> = (Valeur du stock initial + Total PT entrées) ÷ (Quantité stock initial + Total Quantité entrées)</p>
+    </div>
+  </div>
+</main>
+
+<!-- Scripts -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<script>
+  const form = document.getElementById('stock-form');
+  const tableBody = document.getElementById('table-body');
+  let operations = [];
+  let initialAdded = false;
+  let entryCount = 0;
+  let sortieCount = 0;
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+
+    const date = document.getElementById('date').value;
+    const quantite = document.getElementById('quantite').value ? parseInt(document.getElementById('quantite').value) : 0;
+    const prixInput = document.getElementById('prix').value;
+    const type = document.getElementById('type').value;
+    const methode = document.getElementById('methode').value;
+
+    let prix = prixInput ? parseFloat(prixInput) : 0;
+
+    if (!initialAdded && type !== 'entree') {
+      alert("Veuillez d'abord enregistrer le stock initial.");
+      return;
+    }
+
+    let libelle = "";
+    if (!initialAdded) {
+      libelle = "SI";
+    } else if (type === 'entree') {
+      entryCount++;
+      libelle = `B.E N°${entryCount}`;
+    } else if (type === 'sortie') {
+      sortieCount++;
+      libelle = `B.S N°${sortieCount}`;
+    }
+
+    operations.push({ date, type, quantite, prix, methode, libelle });
+    initialAdded = true;
+    renderTable();
+    calculateMetrics();
+    form.reset();
+  });
+
+  function renderTable() {
+    const methode = document.getElementById('methode').value;
+    let stockLots = [];
+    tableBody.innerHTML = "";
+
+    operations.forEach((op, index) => {
+      if (op.type === 'entree') {
+        const existingLot = stockLots.find(lot => lot.pu === op.prix);
+        if (existingLot) {
+          existingLot.qte += op.quantite;
+        } else {
+          stockLots.push({ qte: op.quantite, pu: op.prix });
+        }
+      } else if (op.type === 'sortie') {
+        let restant = op.quantite;
+        const lots = methode === 'FIFO' ? [...stockLots] : [...stockLots].reverse();
+
+        for (let lot of lots) {
+          if (restant <= 0) break;
+          const preleve = Math.min(lot.qte, restant);
+          lot.qte -= preleve;
+          restant -= preleve;
+        }
+        if (methode === 'LIFO') stockLots.reverse();
+        stockLots = stockLots.filter(l => l.qte > 0);
+      }
+
+      const fusionLots = {};
+      for (let lot of stockLots) {
+        if (fusionLots[lot.pu]) {
+          fusionLots[lot.pu] += lot.qte;
+        } else {
+          fusionLots[lot.pu] = lot.qte;
+        }
+      }
+
+      const qteStock = Object.values(fusionLots).reduce((sum, q) => sum + q, 0);
+      let detailsStock = Object.entries(fusionLots).map(([pu, qte]) => {
+        return `${qte} à ${pu}`;
+      }).join('<br>');
+
+      const prixTotal = (op.quantite * op.prix);
+      const prixTotalFormatted = formatPT(prixTotal);
+
+      const row = `
+        <tr>
+          <td><input class="inline-edit" value="${op.date}" onchange="editField(${index}, 'date', this.value)"></td>
+          <td>${op.libelle}</td>
+          <td>${(op.type === 'entree' || op.libelle === "SI") ? `<input class="inline-edit" type="number" value="${op.quantite}" onchange="editField(${index}, 'quantite', this.value)">` : ''}</td>
+          <td>${(op.type === 'entree' || op.libelle === "SI") ? `<input class="inline-edit" type="number" value="${op.prix}" onchange="editField(${index}, 'prix', this.value)">` : ''}</td>
+          <td>${(op.type === 'entree' || op.libelle === "SI") ? prixTotalFormatted : ''}</td>
+          <td>${op.type === 'sortie' ? `<input class="inline-edit" type="number" value="${op.quantite}" onchange="editField(${index}, 'quantite', this.value)">` : ''}</td>
+          <td>-</td>
+          <td>-</td>
+          <td>${qteStock}</td>
+          <td colspan="2">Dont <br>${detailsStock}</td>
+          <td class="no-print">
+            <button class="text-red-500 font-bold text-lg" onclick="deleteRow(${index})">&times;</button>
+          </td>
+        </tr>
+      `;
+      tableBody.insertAdjacentHTML('beforeend', row);
+    });
+  }
+
+  function formatPT(value) {
+    if (Number.isInteger(value)) {
+      return value.toString();
+    }
+    return value.toFixed(2);
+  }
+
+  function formatValue(value) {
+    return Number.isInteger(value) ? value.toString() : value.toFixed(4);
+  }
+
+  function calculateMetrics() {
+    const stockInitial = operations.find(op => op.libelle === "SI");
+    const totalPTEntrees = operations.filter(op => op.type === 'entree' && op.libelle !== "SI").reduce((sum, op) => sum + op.quantite * op.prix, 0);
+    const totalQteEntrees = operations.filter(op => op.type === 'entree' && op.libelle !== "SI").reduce((sum, op) => sum + op.quantite, 0);
+
+    const totalPTInitial = stockInitial ? (stockInitial.quantite * stockInitial.prix) : 0;
+    const totalQteInitial = stockInitial ? stockInitial.quantite : 0;
+
+    const cumpe = totalQteEntrees ? (totalPTEntrees / totalQteEntrees) : 0;
+    const cump = (totalQteInitial + totalQteEntrees) ? ((totalPTInitial + totalPTEntrees) / (totalQteInitial + totalQteEntrees)) : 0;
+    const cumpsie = cump;
+
+    document.getElementById('cump').innerText = formatValue(cump);
+    document.getElementById('cumpe').innerText = formatValue(cumpe);
+    document.getElementById('cumpsie').innerText = formatValue(cumpsie);
+  }
+
+  function editField(index, field, value) {
+    operations[index][field] = field.includes('quantite') || field.includes('prix') ? parseFloat(value) : value;
+    renderTable();
+    calculateMetrics();
+  }
+
+  function deleteRow(index) {
+    operations.splice(index, 1);
+    renderTable();
+    calculateMetrics();
+  }
+
+  function downloadPDF() {
+    const rows = document.querySelectorAll('table tr');
+    rows.forEach(row => {
+      const deleteBtn = row.querySelector('td.no-print');
+      const deleteBtn2 = row.querySelector('th.no-print');
+      if (deleteBtn && deleteBtn2) {
+        deleteBtn.style.display = 'none';
+        deleteBtn2.style.display = 'none'; // Masquer aussi les en-têtes de suppression
+      }
+    });
+
+    const element = document.getElementById('pdf-content');
+    const opt = {
+      margin:       [0.5, 0.5, 0.5, 0.5],
+      filename:     'Stock_OptiCompta.pdf',
+      image:        { type: 'jpeg', quality: 0.98 },
+      html2canvas:  { scale: 3 },
+      jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' }
+    };
+    html2pdf().set(opt).from(element).save();
+
+    // Réafficher les croix rouges et les en-têtes après l'export
+    setTimeout(() => {
+      rows.forEach(row => {
+        const deleteBtn = row.querySelector('td.no-print');
+        const deleteBtn2 = row.querySelector('th.no-print');
+        if (deleteBtn && deleteBtn2) {
+          deleteBtn.style.display = '';
+          deleteBtn2.style.display = ''; // Réafficher aussi les en-têtes de suppression
+        }
+      });
+    }, 500);
+  }
+</script>
+
+</body>
+</html>
