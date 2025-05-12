@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>OptiCompta_Charges</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.22/jspdf.plugin.autotable.min.js"></script>
+  </head>
+  <body class="flex h-screen bg-gray-100">
+    <!-- Sidebar -->
+    <aside class="w-64 bg-gray-900 text-white p-3 overflow-y-auto">
+      <h2 class="text-sm font-semibold mb-3">📋 Entrées</h2>
+      <form id="data-form" class="space-y-2 text-xs">
+        <div>
+          <label class="block mb-0.5" for="charges"
+            >Charges générales de la comptabilité générale</label
+          >
+          <input
+            type="number"
+            step="any"
+            id="charges"
+            class="w-full h-7 px-2 rounded bg-gray-800 border border-gray-700"
+          />
+        </div>
+        <div>
+          <label class="block mb-0.5" for="dotation"
+            >Dotation aux dépréciations</label
+          >
+          <input
+            type="number"
+            step="any"
+            id="dotation"
+            class="w-full h-7 px-2 rounded bg-gray-800 border border-gray-700"
+          />
+        </div>
+        <div>
+          <label class="block mb-0.5" for="justifies">Justifiées à</label>
+          <input
+            type="number"
+            step="any"
+            id="justifies"
+            class="w-full h-7 px-2 rounded bg-gray-800 border border-gray-700"
+          />
+        </div>
+        <div>
+          <label class="block mb-0.5" for="exceptionnelles"
+            >Charges exceptionnelles</label
+          >
+          <input
+            type="number"
+            step="any"
+            id="exceptionnelles"
+            class="w-full h-7 px-2 rounded bg-gray-800 border border-gray-700"
+          />
+        </div>
+        <div>
+          <label class="block mb-0.5" for="locative"
+            >Charge locative énoncée</label
+          >
+          <input
+            type="number"
+            step="any"
+            id="locative"
+            class="w-full h-7 px-2 rounded bg-gray-800 border border-gray-700"
+          />
+        </div>
+        <div>
+          <label class="block mb-0.5" for="locative-duree"
+            >Durée de la charges locative enoncee</label
+          >
+          <select
+            id="locative-duree"
+            class="w-full h-7 px-2 rounded bg-gray-800 border border-gray-700"
+          >
+            <option value="1">Mensuel : 1 mois</option>
+            <option value="2">2 mois</option>
+            <option value="3">Trimestriel : 3 mois</option>
+            <option value="4">4 mois</option>
+            <option value="5">5 mois</option>
+            <option value="6">Semestriel : 6 mois</option>
+            <option value="7">7 mois</option>
+            <option value="8">8 mois</option>
+            <option value="9">9 mois</option>
+            <option value="10">10 mois</option>
+            <option value="11">11 mois</option>
+            <option value="12">Annuel : 12 mois</option>
+          </select>
+        </div>
+        <div>
+          <label class="block mb-0.5" for="impots"
+            >Impôts sur les bénéfices</label
+          >
+          <input
+            type="number"
+            step="any"
+            id="impots"
+            class="w-full h-7 px-2 rounded bg-gray-800 border border-gray-700"
+          />
+        </div>
+        <div>
+          <label class="block mb-0.5" for="capitaux">Capitaux propres</label>
+          <input
+            type="number"
+            step="any"
+            id="capitaux"
+            class="w-full h-7 px-2 rounded bg-gray-800 border border-gray-700"
+          />
+        </div>
+        <div>
+          <label class="block mb-0.5" for="interet">Taux d'intérêt (%)</label>
+          <input
+            type="number"
+            step="any"
+            id="interet"
+            class="w-full h-7 px-2 rounded bg-gray-800 border border-gray-700"
+          />
+        </div>
+        <div>
+          <label class="block mb-0.5" for="mois">Durée d'analyse</label>
+          <select
+            id="mois"
+            class="w-full h-7 px-2 rounded bg-gray-800 border border-gray-700"
+          >
+            <option value="1">Mensuel : 1 mois</option>
+            <option value="2">2 mois</option>
+            <option value="3">Trimestriel : 3 mois</option>
+            <option value="4">4 mois</option>
+            <option value="5">5 mois</option>
+            <option value="6">Semestriel : 6 mois</option>
+            <option value="7">7 mois</option>
+            <option value="8">8 mois</option>
+            <option value="9">9 mois</option>
+            <option value="10">10 mois</option>
+            <option value="11">11 mois</option>
+            <option value="12">Annuel : 12 mois</option>
+          </select>
+        </div>
+        <div class="pt-1">
+          <button
+            type="submit"
+            id="calculer-btn"
+            class="w-full bg-blue-600 hover:bg-blue-700 h-7 rounded font-semibold"
+          >
+            Ajouter
+          </button>
+        </div>
+      </form>
+    </aside>
+
+    <!-- Contenu principal -->
+    <!-- Contenu principal -->
+    <main class="flex-1 overflow-y-auto">
+      <!-- Header de navigation -->
+      <header class="bg-white shadow mb-6">
+        <div
+          class="max-w-full mx-auto px-6 py-4 flex items-center justify-between"
+        >
+          <!-- Logo -->
+          <div class="flex items-center space-x-3">
+            <img src="logo.png" alt="Logo OptiCompta" class="h-10 w-10" />
+            <span class="text-2xl font-bold text-gray-800">OptiCompta</span>
+          </div>
+
+          <!-- Liens de navigation (facultatifs) -->
+          <nav
+            class="hidden md:flex items-center space-x-6 text-sm text-gray-600 font-medium"
+          >
+            <a href="#" class="hover:text-blue-600 transition">Tableau</a>
+            <a href="#" class="hover:text-blue-600 transition">Rapports</a>
+            <a href="#" class="hover:text-blue-600 transition">Paramètres</a>
+          </nav>
+        </div>
+      </header>
+
+      <!-- Titre principal -->
+      <div class="px-8">
+        <h1 class="text-xl font-bold mb-6">📊 Calcul des Charges</h1>
+
+        <!-- Table des résultats -->
+        <table
+          id="data-table"
+          class="min-w-full bg-white border rounded shadow text-sm"
+        >
+          <thead class="bg-gray-200">
+            <tr>
+              <th class="text-left py-2 px-4">Libellé</th>
+              <th class="text-left py-2 px-4">Valeur</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="border-t py-2 px-4">Charges incorporelles</td>
+              <td class="border-t py-2 px-4" id="charges-val"></td>
+            </tr>
+            <tr>
+              <td class="border-t py-2 px-4">Différence d'incorporation</td>
+              <td class="border-t py-2 px-4" id="justifies-val"></td>
+            </tr>
+            <tr>
+              <td class="border-t py-2 px-4">Charges supplétives</td>
+              <td class="border-t py-2 px-4" id="loyer-val"></td>
+            </tr>
+            <tr>
+              <td class="border-t py-2 px-4">Intérêt</td>
+              <td class="border-t py-2 px-4" id="capitaux-val"></td>
+            </tr>
+            <tr>
+              <td class="border-t py-2 px-4">Charge incorporée aux coûts</td>
+              <td class="border-t py-2 px-4" id="impots-val"></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="mt-6">
+          <button
+            id="save-pdf"
+            class="w-full bg-green-600 hover:bg-green-700 h-8 rounded font-semibold"
+          >
+            Enregistrer en PDF
+          </button>
+        </div>
+      </div>
+    </main>
+
+    <script>
+      function tousLesChampsSontVides() {
+        const ids = [
+          "charges",
+          "dotation",
+          "justifies",
+          "exceptionnelles",
+          "locative",
+          "impots",
+          "capitaux",
+          "interet",
+        ];
+        return ids.every((id) => !document.getElementById(id).value.trim());
+      }
+
+      function updateButtonText() {
+        const button = document.getElementById("calculer-btn");
+        button.textContent = tousLesChampsSontVides() ? "Calculer" : "Calculer";
+      }
+
+      function calculerEtAfficher(e) {
+        e.preventDefault();
+
+        const charges =
+          parseFloat(document.getElementById("charges").value) || 0;
+        const dotation =
+          parseFloat(document.getElementById("dotation").value) || 0;
+        const justifies =
+          parseFloat(document.getElementById("justifies").value) || 0;
+        const exceptionnelles =
+          parseFloat(document.getElementById("exceptionnelles").value) || 0;
+        const locative =
+          parseFloat(document.getElementById("locative").value) || 0;
+        const locativeDuree =
+          parseInt(document.getElementById("locative-duree").value) || 1;
+        const impots = parseFloat(document.getElementById("impots").value) || 0;
+        const capitaux =
+          parseFloat(document.getElementById("capitaux").value) || 0;
+        const interet =
+          parseFloat(document.getElementById("interet").value) || 0;
+        const mois = parseInt(document.getElementById("mois").value) || 1;
+
+        const dureeAnalyse = 12 / mois;
+        const loyer = locative / locativeDuree;
+        const chargesIncorporelles = (exceptionnelles + impots) * -1;
+        const differenceIncorporation =
+          (dotation - justifies + (locative - loyer)) * -1;
+        const chargesSuppletives =
+          charges + chargesIncorporelles + differenceIncorporation;
+        const interetCalc = (capitaux * interet) / 100 / dureeAnalyse;
+        const chargeIncorporee = chargesSuppletives + interetCalc;
+
+        document.getElementById("charges-val").textContent =
+          chargesIncorporelles.toFixed(2);
+        document.getElementById("justifies-val").textContent =
+          differenceIncorporation.toFixed(2);
+        document.getElementById("loyer-val").textContent =
+          chargesSuppletives.toFixed(2);
+        document.getElementById("capitaux-val").textContent =
+          interetCalc.toFixed(2);
+        document.getElementById("impots-val").textContent =
+          chargeIncorporee.toFixed(2);
+
+        updateButtonText();
+
+        document.getElementById("save-pdf").onclick = function () {
+          const { jsPDF } = window.jspdf;
+          const doc = new jsPDF();
+          const marginLeft = 30;
+          const marginTop = 25;
+
+          doc.setFontSize(14);
+          doc.setFont("helvetica", "bold");
+          doc.text("Calculs détaillés", marginLeft, marginTop);
+
+          doc.setFontSize(10);
+          let y = marginTop + 10;
+
+          const sections = [
+            {
+              titre: "1. Charges Incorporelles",
+              formule: "Formule : (Charges exceptionnelles + Impôts) * -1",
+              calcul: `Calcul  : (${exceptionnelles} + ${impots}) * -1 = ${chargesIncorporelles.toFixed(
+                2
+              )}`,
+            },
+            {
+              titre: "2. Loyer Mensuel",
+              formule:
+                "Formule : Charges locatives / Durée des charges locatives",
+              calcul: `Calcul  : ${locative} / ${locativeDuree} = ${loyer.toFixed(
+                2
+              )}`,
+            },
+            {
+              titre: "3. Différence d'Incorporation",
+              formule:
+                "Formule : [(Dotation - Justifiées) + (Charges locatives - Loyer)] * -1",
+              calcul: `Calcul  : [(${dotation} - ${justifies}) + (${locative} - ${loyer.toFixed(
+                2
+              )})] * -1 = ${differenceIncorporation.toFixed(2)}`,
+            },
+            {
+              titre: "4. Charges Supplétives",
+              formule:
+                "Formule : Charges générales + Incorporelles + Différence",
+              calcul: `Calcul  : ${charges} + ${chargesIncorporelles.toFixed(
+                2
+              )} + ${differenceIncorporation.toFixed(
+                2
+              )} = ${chargesSuppletives.toFixed(2)}`,
+            },
+            {
+              titre: "5. Intérêt",
+              formule: "Formule : (Capitaux * Taux) / Durée d'analyse",
+              calcul: `Calcul  : (${capitaux} * ${interet}%) / ${dureeAnalyse} = ${interetCalc.toFixed(
+                2
+              )}`,
+            },
+            {
+              titre: "6. Charge Incorporée aux Coûts",
+              formule: "Formule : Charges Supplétives + Intérêt",
+              calcul: `Calcul  : ${chargesSuppletives.toFixed(
+                2
+              )} + ${interetCalc.toFixed(2)} = ${chargeIncorporee.toFixed(2)}`,
+            },
+          ];
+
+          sections.forEach((section) => {
+            doc.setFont("helvetica", "bold");
+            doc.text(section.titre, marginLeft, y);
+            y += 7;
+
+            doc.setFont("helvetica", "normal");
+            const formulaLines = doc.splitTextToSize(section.formule, 150);
+            const calcLines = doc.splitTextToSize(section.calcul, 150);
+            doc.text(formulaLines, marginLeft, y);
+            y += formulaLines.length * 6;
+            doc.text(calcLines, marginLeft, y);
+            y += calcLines.length * 6;
+
+            doc.setDrawColor(200);
+            doc.line(marginLeft, y, 210 - 10, y);
+            y += 10;
+          });
+
+          doc.autoTable({
+            html: "#data-table",
+            startY: y + 5,
+            margin: { top: marginTop, left: marginLeft, right: 10 },
+            styles: {
+              fontSize: 9,
+              lineWidth: 0.1,
+              lineColor: [0, 0, 0],
+            },
+          });
+
+          doc.save("tableau_comptabilite.pdf");
+        };
+      }
+
+      document
+        .getElementById("calculer-btn")
+        .addEventListener("click", calculerEtAfficher);
+      document
+        .querySelectorAll("#data-form input, #data-form select")
+        .forEach((el) => el.addEventListener("input", updateButtonText));
+
+      document
+        .querySelectorAll('#data-table td[id$="-val"]')
+        .forEach((cell) => {
+          cell.textContent = "";
+        });
+
+      updateButtonText();
+    </script>
+  </body>
+</html>

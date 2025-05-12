@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>OptiCompta_Charges</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.22/jspdf.plugin.autotable.min.js"></script>
+  </head>
+  <body class="flex flex-col md:flex-row h-screen bg-gray-100">
+    <!-- Sidebar -->
+    <aside class="w-full md:w-64 bg-gray-900 text-white p-3 overflow-y-auto">
+      <h2 class="text-sm font-semibold mb-3">📋 Entrées</h2>
+      <form id="data-form" class="space-y-2 text-xs">
+        <div>
+          <label class="block mb-0.5" for="montant-energie"
+            >Montant Centre Énergie</label
+          >
+          <input
+            type="number"
+            step="any"
+            id="montant-energie"
+            class="w-full h-7 px-2 rounded bg-gray-800 border border-gray-700"
+          />
+        </div>
+        <div>
+          <label class="block mb-0.5" for="montant-entretien"
+            >Montant Centre Entretien</label
+          >
+          <input
+            type="number"
+            step="any"
+            id="montant-entretien"
+            class="w-full h-7 px-2 rounded bg-gray-800 border border-gray-700"
+          />
+        </div>
+        <div>
+          <label class="block mb-0.5" for="energie"
+            >Énergie → Entretien (%)</label
+          >
+          <div class="relative">
+            <input
+              type="number"
+              step="any"
+              id="entretien"
+              class="w-full h-7 pr-6 px-2 rounded bg-gray-800 border border-gray-700 text-white"
+            />
+            <span
+              class="absolute right-2 top-1.5 text-gray-400 text-sm pointer-events-none"
+              >%</span
+            >
+          </div>
+        </div>
+        <div>
+          <label class="block mb-0.5" for="entretien"
+            >Entretien → Énergie (%)</label
+          >
+          <div class="relative">
+            <input
+              type="number"
+              step="any"
+              id="energie"
+              class="w-full h-7 pr-6 px-2 rounded bg-gray-800 border border-gray-700 text-white"
+            />
+            <span
+              class="absolute right-2 top-1.5 text-gray-400 text-sm pointer-events-none"
+              >%</span
+            >
+          </div>
+        </div>
+      </form>
+    </aside>
+
+    <!-- Contenu principal -->
+    <main class="flex-1 overflow-y-auto">
+      <header class="bg-white shadow mb-6 px-4 md:px-8">
+        <div class="max-w-full mx-auto py-4 flex items-center justify-between">
+          <div class="flex items-center space-x-3">
+            <img src="logo.png" alt="Logo OptiCompta" class="h-10 w-10" />
+            <span class="text-2xl font-bold text-gray-800">OptiCompta</span>
+          </div>
+        </div>
+      </header>
+
+      <div class="px-4 md:px-8">
+        <h1 class="text-xl font-bold mb-6">📊 Calcul des Charges</h1>
+
+        <div
+          class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-4 text-sm"
+        >
+          <p class="font-semibold mb-1">🔍 Interprétation :</p>
+          <ul class="list-disc ml-5 space-y-1">
+            <li>
+              La méthode utilise un système d'équations pour répartir les
+              charges entre les centres auxiliaires en fonction de leur
+              interaction croisée.
+            </li>
+            <li>
+              <strong>x</strong> = total charges Entretien ;
+              <strong>y</strong> = total charges Énergie.
+            </li>
+            <li>
+              Formules : <code>x = E + a × y</code>, <code>y = N + b × x</code>
+            </li>
+          </ul>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table
+            id="data-table"
+            class="min-w-full bg-white border border-gray-300 rounded shadow text-sm"
+          >
+            <thead class="bg-gray-200">
+              <tr class="border-b border-gray-300">
+                <th rowspan="3" class="text-left py-2 px-4 border">
+                  Répartition primaire
+                </th>
+                <th colspan="2" class="text-center py-2 px-4 border">
+                  Centres auxiliaires
+                </th>
+              </tr>
+              <tr class="border-b border-gray-300">
+                <th class="text-left py-2 px-4 border">Entretien</th>
+                <th class="text-left py-2 px-4 border">Énergie</th>
+              </tr>
+              <tr class="border-b border-gray-300">
+                <th class="text-left py-2 px-4 border">
+                  <input
+                    type="number"
+                    step="any"
+                    id="entretien-montant"
+                    class="w-full bg-transparent text-sm text-gray-800 focus:outline-none"
+                  />
+                </th>
+                <th class="text-left py-2 px-4 border">
+                  <input
+                    type="number"
+                    step="any"
+                    id="energie-montant"
+                    class="w-full bg-transparent text-sm text-gray-800 focus:outline-none"
+                  />
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="py-2 px-4 border">Entretien</td>
+                <td class="py-2 px-4 border"></td>
+                <td class="py-2 px-4 border">
+                  <input
+                    type="text"
+                    id="entretien-to-energie"
+                    class="w-full bg-transparent text-sm text-gray-800 focus:outline-none inline-block"
+                  /><span class="ml-1">%</span>
+                </td>
+              </tr>
+              <tr>
+                <td class="py-2 px-4 border">Énergie</td>
+                <td class="py-2 px-4 border">
+                  <input
+                    type="text"
+                    id="energie-to-entretien"
+                    class="w-full bg-transparent text-sm text-gray-800 focus:outline-none inline-block"
+                  /><span class="ml-1">%</span>
+                </td>
+                <td class="py-2 px-4 border"></td>
+              </tr>
+              <tr class="bg-gray-100 font-semibold">
+                <td class="py-2 px-4 border">Total</td>
+                <td class="py-2 px-4 border">
+                  <input
+                    type="text"
+                    id="total-entretien"
+                    class="w-full bg-transparent text-sm text-gray-600 focus:outline-none"
+                    disabled
+                  />
+                </td>
+                <td class="py-2 px-4 border">
+                  <input
+                    type="text"
+                    id="total-energie"
+                    class="w-full bg-transparent text-sm text-gray-600 focus:outline-none"
+                    disabled
+                  />
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="mt-6">
+          <button
+            id="save-pdf"
+            class="w-full sm:w-auto px-4 py-2 bg-green-600 hover:bg-green-700 rounded font-semibold text-white"
+          >
+            Enregistrer en PDF
+          </button>
+        </div>
+      </div>
+    </main>
+
+    <script>
+      function syncValue(sourceId, targetId) {
+        const source = document.getElementById(sourceId);
+        const target = document.getElementById(targetId);
+        source.addEventListener("input", () => {
+          target.value = source.value;
+          updateTotals();
+        });
+      }
+
+      function trimTrailingZeros(value) {
+        return parseFloat(value).toString();
+      }
+
+      function updateTotals() {
+        const E =
+          parseFloat(document.getElementById("montant-entretien").value) || 0;
+        const N =
+          parseFloat(document.getElementById("montant-energie").value) || 0;
+        const a =
+          (parseFloat(document.getElementById("energie").value) || 0) / 100;
+        const b =
+          (parseFloat(document.getElementById("entretien").value) || 0) / 100;
+
+        const denominator = 1 - a * b;
+        if (denominator === 0) {
+          alert("Le système ne peut pas être résolu : division par zéro.");
+          return;
+        }
+
+        const y = (N + b * E) / denominator;
+        const x = E + a * y;
+        const entretienToEnergie = b * x;
+        const energieToEntretien = a * y;
+
+        document.getElementById("entretien-montant").value = trimTrailingZeros(
+          E.toFixed(2)
+        );
+        document.getElementById("energie-montant").value = trimTrailingZeros(
+          N.toFixed(2)
+        );
+        document.getElementById("entretien-to-energie").value =
+          trimTrailingZeros(entretienToEnergie.toFixed(2));
+        document.getElementById("energie-to-entretien").value =
+          trimTrailingZeros(energieToEntretien.toFixed(2));
+        document.getElementById("total-entretien").value = trimTrailingZeros(
+          x.toFixed(2)
+        );
+        document.getElementById("total-energie").value = trimTrailingZeros(
+          y.toFixed(2)
+        );
+      }
+
+      syncValue("montant-entretien", "entretien-montant");
+      syncValue("montant-energie", "energie-montant");
+      syncValue("entretien", "entretien-to-energie");
+      syncValue("energie", "energie-to-entretien");
+
+      document
+        .getElementById("save-pdf")
+        .addEventListener("click", function () {
+          const { jsPDF } = window.jspdf;
+          const doc = new jsPDF();
+
+          const champs = [
+            "entretien-montant",
+            "energie-montant",
+            "entretien-to-energie",
+            "energie-to-entretien",
+            "total-entretien",
+            "total-energie",
+          ];
+
+          const remplacements = champs.map((id) => {
+            const input = document.getElementById(id);
+            const parent = input.parentElement;
+            return { parent, original: parent.innerHTML, value: input.value };
+          });
+
+          remplacements.forEach(({ parent, value }) => {
+            parent.innerText = value;
+          });
+
+          doc.text("Tableau de Répartition", 20, 20);
+          doc.autoTable({
+            html: "#data-table",
+            startY: 30,
+            styles: { fontSize: 10 },
+          });
+          doc.save("tableau_repartition.pdf");
+
+          remplacements.forEach(({ parent, original }) => {
+            parent.innerHTML = original;
+          });
+        });
+    </script>
+  </body>
+</html>
