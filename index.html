@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Opticompta - Application de Comptabilité</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+
+  <body class="font-sans bg-gray-50 text-gray-900">
+    <!-- Navbar -->
+    <nav class="bg-blue-600 shadow-lg">
+      <div
+        class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center"
+      >
+        <a href="#" class="text-white text-2xl font-bold">Opticompta</a>
+
+        <!-- Menu hamburger pour mobile -->
+        <div class="lg:hidden">
+          <button id="menu-btn" class="text-white">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-6 w-6"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M4 6h16M4 12h16M4 18h16"
+              ></path>
+            </svg>
+          </button>
+        </div>
+
+        <div class="hidden lg:flex space-x-4">
+          <a href="charges/" class="text-white hover:text-gray-200">Charges</a>
+          <a href="cout d'achat/" class="text-white hover:text-gray-200"
+            >Coût d'Achat</a
+          >
+          <a href="Rep" class="text-white hover:text-gray-200"
+            >Répartition des Centres</a
+          >
+          <a href="#stock" class="text-white hover:text-gray-200">Stock</a>
+        </div>
+      </div>
+
+      <!-- Menu mobile -->
+      <div id="mobile-menu" class="lg:hidden hidden bg-blue-600 text-white">
+        <a href="charges/" class="block py-2 px-4">Charges</a>
+        <a href="cout d'achat/" class="block py-2 px-4">Coût d'Achat</a>
+        <a href="Rep" class="block py-2 px-4">Répartition des Centres</a>
+        <a href="#stock" class="block py-2 px-4">Stock</a>
+      </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="bg-blue-500 text-white text-center py-20">
+      <h1 class="text-4xl font-extrabold mb-4">Bienvenue dans Opticompta</h1>
+      <p class="text-lg mb-8">
+        Simplifiez vos calculs et la gestion de vos finances avec notre
+        application.
+      </p>
+      <a
+        href="#"
+        class="bg-white text-blue-600 hover:bg-blue-200 py-2 px-6 rounded-full text-lg"
+        id="commencer-btn"
+        >Commencer</a
+      >
+    </section>
+
+    <!-- Sections -->
+    <section id="charges" class="py-12 bg-white">
+      <div class="max-w-7xl mx-auto px-6 text-center">
+        <h2 class="text-3xl font-semibold text-blue-600 mb-4">
+          Calcul des Charges
+        </h2>
+        <p class="text-gray-600 mb-6">
+          Entrez les charges et suivez les calculs pour votre comptabilité.
+        </p>
+        <a
+          href="charges/"
+          class="bg-blue-600 text-white py-2 px-6 rounded-md hover:bg-blue-700"
+          >Accéder aux charges</a
+        >
+      </div>
+    </section>
+
+    <section id="cout-achat" class="py-12 bg-gray-50">
+      <div class="max-w-7xl mx-auto px-6 text-center">
+        <h2 class="text-3xl font-semibold text-blue-600 mb-4">
+          Calcul du Coût d'Achat
+        </h2>
+        <p class="text-gray-600 mb-6">
+          Calculez précisément le coût d'achat de vos produits.
+        </p>
+        <a
+          href="cout d'achat/"
+          class="bg-blue-600 text-white py-2 px-6 rounded-md hover:bg-blue-700"
+          >Accéder au coût d'achat</a
+        >
+      </div>
+    </section>
+
+    <section id="repartition-centres" class="py-12 bg-white">
+      <div class="max-w-7xl mx-auto px-6 text-center">
+        <h2 class="text-3xl font-semibold text-blue-600 mb-4">
+          Répartition des Centres
+        </h2>
+        <p class="text-gray-600 mb-6">
+          Suivez la répartition des coûts entre vos différents centres de coûts.
+        </p>
+        <a
+          href="Repartition Centres/"
+          class="bg-blue-600 text-white py-2 px-6 rounded-md hover:bg-blue-700"
+          >Accéder à la répartition</a
+        >
+      </div>
+    </section>
+
+    <section id="stock" class="py-12 bg-gray-50">
+      <div class="max-w-7xl mx-auto px-6 text-center">
+        <h2 class="text-3xl font-semibold text-blue-600 mb-4">
+          Gestion du Stock
+        </h2>
+        <p class="text-gray-600 mb-6">
+          Gérez votre stock et suivez les mouvements en temps réel.
+        </p>
+        <a
+          href="stock"
+          class="bg-blue-600 text-white py-2 px-6 rounded-md hover:bg-blue-700"
+          >Accéder au stock</a
+        >
+      </div>
+    </section>
+
+    <script>
+      // Fonction de défilement fluide
+      function defilerProgressivement() {
+        const section = document.getElementById("charges"); // Cible la section à faire défiler
+        const scrollHeight = section.offsetTop;
+        window.scrollTo({
+          top: scrollHeight,
+          behavior: "smooth", // Défilement fluide
+        });
+      }
+
+      // Attacher l'événement au bouton "Commencer"
+      document
+        .getElementById("commencer-btn")
+        .addEventListener("click", function (event) {
+          event.preventDefault(); // Empêche le comportement par défaut du lien
+          defilerProgressivement(); // Lance le défilement
+        });
+
+      // Fonction pour afficher/masquer le menu mobile
+      document
+        .getElementById("menu-btn")
+        .addEventListener("click", function () {
+          const menu = document.getElementById("mobile-menu");
+          menu.classList.toggle("hidden"); // Bascule la visibilité du menu
+        });
+    </script>
+  </body>
+</html>
