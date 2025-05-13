@@ -8,73 +8,73 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.22/jspdf.plugin.autotable.min.js"></script>
   </head>
-  <body class="flex h-screen bg-gray-100">
+  <body class="flex flex-col md:flex-row h-screen bg-gray-100">
     <!-- Sidebar -->
     <aside
-      class="w-64 bg-gray-900 text-white p-4 overflow-y-auto md:flex flex-col"
+      class="w-full md:w-64 bg-gray-900 text-white p-4 overflow-y-auto md:h-screen"
     >
-      <h2 class="text-lg font-semibold mb-4">📋 Entrées</h2>
-      <form id="data-form" class="space-y-4 text-sm">
+      <h2 class="text-base font-semibold mb-4">📋 Entrées</h2>
+      <form id="data-form" class="space-y-3 text-sm">
         <div>
-          <label class="block mb-2" for="charges"
+          <label class="block mb-0.5" for="charges"
             >Charges générales de la comptabilité générale</label
           >
           <input
             type="number"
             step="any"
             id="charges"
-            class="w-full h-10 px-3 rounded bg-gray-800 border border-gray-700"
+            class="w-full h-7 px-2 rounded bg-gray-800 border border-gray-700"
           />
         </div>
         <div>
-          <label class="block mb-2" for="dotation"
+          <label class="block mb-0.5" for="dotation"
             >Dotation aux dépréciations</label
           >
           <input
             type="number"
             step="any"
             id="dotation"
-            class="w-full h-10 px-3 rounded bg-gray-800 border border-gray-700"
+            class="w-full h-7 px-2 rounded bg-gray-800 border border-gray-700"
           />
         </div>
         <div>
-          <label class="block mb-2" for="justifies">Justifiées à</label>
+          <label class="block mb-0.5" for="justifies">Justifiées à</label>
           <input
             type="number"
             step="any"
             id="justifies"
-            class="w-full h-10 px-3 rounded bg-gray-800 border border-gray-700"
+            class="w-full h-7 px-2 rounded bg-gray-800 border border-gray-700"
           />
         </div>
         <div>
-          <label class="block mb-2" for="exceptionnelles"
+          <label class="block mb-0.5" for="exceptionnelles"
             >Charges exceptionnelles</label
           >
           <input
             type="number"
             step="any"
             id="exceptionnelles"
-            class="w-full h-10 px-3 rounded bg-gray-800 border border-gray-700"
+            class="w-full h-7 px-2 rounded bg-gray-800 border border-gray-700"
           />
         </div>
         <div>
-          <label class="block mb-2" for="locative"
+          <label class="block mb-0.5" for="locative"
             >Charge locative énoncée</label
           >
           <input
             type="number"
             step="any"
             id="locative"
-            class="w-full h-10 px-3 rounded bg-gray-800 border border-gray-700"
+            class="w-full h-7 px-2 rounded bg-gray-800 border border-gray-700"
           />
         </div>
         <div>
-          <label class="block mb-2" for="locative-duree"
-            >Durée de la charge locative énoncée</label
+          <label class="block mb-0.5" for="locative-duree"
+            >Durée de la charges locative enoncee</label
           >
           <select
             id="locative-duree"
-            class="w-full h-10 px-3 rounded bg-gray-800 border border-gray-700"
+            class="w-full h-7 px-2 rounded bg-gray-800 border border-gray-700"
           >
             <option value="1">Mensuel : 1 mois</option>
             <option value="2">2 mois</option>
@@ -91,39 +91,39 @@
           </select>
         </div>
         <div>
-          <label class="block mb-2" for="impots"
+          <label class="block mb-0.5" for="impots"
             >Impôts sur les bénéfices</label
           >
           <input
             type="number"
             step="any"
             id="impots"
-            class="w-full h-10 px-3 rounded bg-gray-800 border border-gray-700"
+            class="w-full h-7 px-2 rounded bg-gray-800 border border-gray-700"
           />
         </div>
         <div>
-          <label class="block mb-2" for="capitaux">Capitaux propres</label>
+          <label class="block mb-0.5" for="capitaux">Capitaux propres</label>
           <input
             type="number"
             step="any"
             id="capitaux"
-            class="w-full h-10 px-3 rounded bg-gray-800 border border-gray-700"
+            class="w-full h-7 px-2 rounded bg-gray-800 border border-gray-700"
           />
         </div>
         <div>
-          <label class="block mb-2" for="interet">Taux d'intérêt (%)</label>
+          <label class="block mb-0.5" for="interet">Taux d'intérêt (%)</label>
           <input
             type="number"
             step="any"
             id="interet"
-            class="w-full h-10 px-3 rounded bg-gray-800 border border-gray-700"
+            class="w-full h-7 px-2 rounded bg-gray-800 border border-gray-700"
           />
         </div>
         <div>
-          <label class="block mb-2" for="mois">Durée d'analyse</label>
+          <label class="block mb-0.5" for="mois">Durée d'analyse</label>
           <select
             id="mois"
-            class="w-full h-10 px-3 rounded bg-gray-800 border border-gray-700"
+            class="w-full h-7 px-2 rounded bg-gray-800 border border-gray-700"
           >
             <option value="1">Mensuel : 1 mois</option>
             <option value="2">2 mois</option>
@@ -139,11 +139,12 @@
             <option value="12">Annuel : 12 mois</option>
           </select>
         </div>
-        <div class="pt-4">
+
+        <div class="pt-2">
           <button
             type="submit"
             id="calculer-btn"
-            class="w-full bg-blue-600 hover:bg-blue-700 h-12 rounded font-semibold"
+            class="w-full bg-blue-600 hover:bg-blue-700 h-9 rounded font-semibold"
           >
             Ajouter
           </button>
@@ -152,26 +153,24 @@
     </aside>
 
     <!-- Contenu principal -->
-    <main class="flex-1 overflow-y-auto md:flex md:flex-col">
-      <!-- Header de navigation -->
-      <header class="bg-white shadow mb-6">
+    <main class="flex-1 overflow-y-auto p-4">
+      <!-- Header -->
+      <header class="bg-white shadow mb-6 rounded">
         <div
-          class="max-w-full mx-auto px-6 py-4 flex items-center justify-between"
+          class="flex flex-col sm:flex-row items-center justify-between px-4 py-3"
         >
           <!-- Logo -->
-          <div class="flex items-center space-x-3">
+          <div class="flex items-center space-x-3 mb-2 sm:mb-0">
             <img
               src="../assets/logo.png"
               alt="Logo OptiCompta"
               class="h-10 w-10"
             />
-            <span class="text-2xl font-bold text-gray-800">OptiCompta</span>
+            <span class="text-xl font-bold text-gray-800">OptiCompta</span>
           </div>
 
-          <!-- Liens de navigation -->
-          <nav
-            class="hidden md:flex items-center space-x-6 text-sm text-gray-600 font-medium"
-          >
+          <!-- Navigation -->
+          <nav class="flex space-x-4 text-sm text-gray-600 font-medium">
             <a href="#" class="hover:text-blue-600 transition">Tableau</a>
             <a href="#" class="hover:text-blue-600 transition">Rapports</a>
             <a href="#" class="hover:text-blue-600 transition">Paramètres</a>
@@ -179,15 +178,12 @@
         </div>
       </header>
 
-      <!-- Titre principal -->
-      <div class="px-8">
-        <h1 class="text-xl font-bold mb-6">📊 Calcul des Charges</h1>
+      <!-- Titre -->
+      <h1 class="text-lg sm:text-xl font-bold mb-4">📊 Calcul des Charges</h1>
 
-        <!-- Table des résultats -->
-        <table
-          id="data-table"
-          class="min-w-full bg-white border rounded shadow text-sm"
-        >
+      <!-- Table responsive -->
+      <div class="overflow-x-auto rounded shadow">
+        <table id="data-table" class="min-w-full bg-white border text-sm">
           <thead class="bg-gray-200">
             <tr>
               <th class="text-left py-2 px-4">Libellé</th>
@@ -217,20 +213,20 @@
             </tr>
           </tbody>
         </table>
+      </div>
 
-        <div class="mt-6">
-          <button
-            id="save-pdf"
-            class="w-full bg-green-600 hover:bg-green-700 h-12 rounded font-semibold"
-          >
-            Enregistrer en PDF
-          </button>
-        </div>
+      <div class="mt-6">
+        <button
+          id="save-pdf"
+          class="w-full bg-green-600 hover:bg-green-700 h-9 rounded font-semibold"
+        >
+          Enregistrer en PDF
+        </button>
       </div>
     </main>
 
+    <!-- Script JS (inchangé) -->
     <script>
-      // Ton script ici pour gérer le calcul, les interactions avec le formulaire et le PDF
       function tousLesChampsSontVides() {
         const ids = [
           "charges",
@@ -294,6 +290,101 @@
           chargeIncorporee.toFixed(2);
 
         updateButtonText();
+
+        document.getElementById("save-pdf").onclick = function () {
+          const { jsPDF } = window.jspdf;
+          const doc = new jsPDF();
+          const marginLeft = 30;
+          const marginTop = 25;
+
+          doc.setFontSize(14);
+          doc.setFont("helvetica", "bold");
+          doc.text("Calculs détaillés", marginLeft, marginTop);
+
+          doc.setFontSize(10);
+          let y = marginTop + 10;
+
+          const sections = [
+            {
+              titre: "1. Charges Incorporelles",
+              formule: "Formule : (Charges exceptionnelles + Impôts) * -1",
+              calcul: `Calcul  : (${exceptionnelles} + ${impots}) * -1 = ${chargesIncorporelles.toFixed(
+                2
+              )}`,
+            },
+            {
+              titre: "2. Loyer Mensuel",
+              formule:
+                "Formule : Charges locatives / Durée des charges locatives",
+              calcul: `Calcul  : ${locative} / ${locativeDuree} = ${loyer.toFixed(
+                2
+              )}`,
+            },
+            {
+              titre: "3. Différence d'Incorporation",
+              formule:
+                "Formule : [(Dotation - Justifiées) + (Charges locatives - Loyer)] * -1",
+              calcul: `Calcul  : [(${dotation} - ${justifies}) + (${locative} - ${loyer.toFixed(
+                2
+              )})] * -1 = ${differenceIncorporation.toFixed(2)}`,
+            },
+            {
+              titre: "4. Charges Supplétives",
+              formule:
+                "Formule : Charges générales + Incorporelles + Différence",
+              calcul: `Calcul  : ${charges} + ${chargesIncorporelles.toFixed(
+                2
+              )} + ${differenceIncorporation.toFixed(
+                2
+              )} = ${chargesSuppletives.toFixed(2)}`,
+            },
+            {
+              titre: "5. Intérêt",
+              formule: "Formule : (Capitaux * Taux) / Durée d'analyse",
+              calcul: `Calcul  : (${capitaux} * ${interet}%) / ${dureeAnalyse} = ${interetCalc.toFixed(
+                2
+              )}`,
+            },
+            {
+              titre: "6. Charge Incorporée aux Coûts",
+              formule: "Formule : Charges Supplétives + Intérêt",
+              calcul: `Calcul  : ${chargesSuppletives.toFixed(
+                2
+              )} + ${interetCalc.toFixed(2)} = ${chargeIncorporee.toFixed(2)}`,
+            },
+          ];
+
+          sections.forEach((section) => {
+            doc.setFont("helvetica", "bold");
+            doc.text(section.titre, marginLeft, y);
+            y += 7;
+
+            doc.setFont("helvetica", "normal");
+            const formulaLines = doc.splitTextToSize(section.formule, 150);
+            const calcLines = doc.splitTextToSize(section.calcul, 150);
+            doc.text(formulaLines, marginLeft, y);
+            y += formulaLines.length * 6;
+            doc.text(calcLines, marginLeft, y);
+            y += calcLines.length * 6;
+
+            doc.setDrawColor(200);
+            doc.line(marginLeft, y, 210 - 10, y);
+            y += 10;
+          });
+
+          doc.autoTable({
+            html: "#data-table",
+            startY: y + 5,
+            margin: { top: marginTop, left: marginLeft, right: 10 },
+            styles: {
+              fontSize: 9,
+              lineWidth: 0.1,
+              lineColor: [0, 0, 0],
+            },
+          });
+
+          doc.save("tableau_comptabilite.pdf");
+        };
       }
 
       document
@@ -302,6 +393,14 @@
       document
         .querySelectorAll("#data-form input, #data-form select")
         .forEach((el) => el.addEventListener("input", updateButtonText));
+
+      document
+        .querySelectorAll('#data-table td[id$="-val"]')
+        .forEach((cell) => {
+          cell.textContent = "";
+        });
+
+      updateButtonText();
     </script>
   </body>
 </html>
